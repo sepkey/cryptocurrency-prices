@@ -1,19 +1,49 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+const WS_URL = 'wss://ws.coincap.io/prices?assets=ALL';
 
 export default function Home() {
   const [priceList, setPriceList] = useState<Record<string, unknown>[]>([]);
 
-  useEffect(() => {
-    const priceWs = new WebSocket('wss://ws.coincap.io/prices?assets=ALL');
+  const createWebSocket = useCallback(
+    (onMessage: (msg: MessageEvent<any>) => void) => {
+      const ws = new WebSocket(WS_URL);
 
-    priceWs.onmessage = function (msg) {
+      ws.onmessage = onMessage;
+
+      ws.onclose = function () {
+        console.log(
+          'WebSocket closed. Attempting to reconnect in 3 seconds...'
+        );
+        setTimeout(() => {
+          createWebSocket(onMessage);
+        }, 3000);
+      };
+
+      ws.onerror = function (error) {
+        console.error('WebSocket error:', error);
+        ws.close();
+      };
+
+      return ws;
+    },
+    []
+  );
+
+  useEffect(() => {
+    const onMessage = function (msg: MessageEvent<any>) {
       const cryptoArray = Object.entries(JSON.parse(msg.data)).map(
         ([key, value]) => ({ [key]: value })
       );
       setPriceList(cryptoArray);
     };
-  }, []);
+
+    const ws = createWebSocket(onMessage);
+    return () => {
+      ws.close();
+    };
+  }, [createWebSocket]);
 
   return (
     <main className="flex flex-col items-center justify-between p-16">
