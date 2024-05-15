@@ -1,5 +1,6 @@
 'use client';
-import { getRefreshedPrices } from '@/helper/getNewList';
+import { REST_API_URL } from '@/utils/constants';
+import { getRefreshedPrices } from '@/utils/getNewList';
 import usePricesBySocket from '@/hooks/usePricesBySocket';
 import { ICoin } from '@/types/type';
 import { useEffect, useState } from 'react';
@@ -9,7 +10,7 @@ export default function Home() {
   const [restData, setRestData] = useState<ICoin[]>([]);
 
   useEffect(() => {
-    fetch('https://api.coincap.io/v2/assets')
+    fetch(REST_API_URL)
       .then((res) => res.json())
       .then((res) => {
         const mappedData = res.data.map((item: ICoin) => {

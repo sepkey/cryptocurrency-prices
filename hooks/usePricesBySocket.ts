@@ -1,6 +1,6 @@
 'use client';
 
-import { WS_URL } from '@/helper/constants';
+import { WS_URL } from '@/utils/constants';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function usePricesBySocket() {
