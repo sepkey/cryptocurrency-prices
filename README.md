@@ -1,4 +1,4 @@
-# Cryptocurrency Project
+# Cryptocurrency Prices Project
 
 ℹ️ This project was bootstrapped with [Next.js](https://nextjs.org/) version 14. 🚀
 
