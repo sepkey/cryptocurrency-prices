@@ -1,11 +1,10 @@
 'use client';
 
+import { WS_URL } from '@/helper/constants';
 import { useCallback, useEffect, useState } from 'react';
 
-const WS_URL = 'wss://ws.coincap.io/prices?assets=ALL';
-
 export default function usePricesBySocket() {
-  const [priceList, setPriceList] = useState<Record<string, unknown>[]>([]);
+  const [socketData, setSocketData] = useState<Record<string, unknown>[]>([]);
 
   const createWebSocket = useCallback(
     (onMessage: (msg: MessageEvent<any>) => void) => {
@@ -37,7 +36,7 @@ export default function usePricesBySocket() {
       const cryptoArray = Object.entries(JSON.parse(msg.data)).map(
         ([key, value]) => ({ [key]: value })
       );
-      setPriceList(cryptoArray);
+      setSocketData(cryptoArray);
     };
 
     const ws = createWebSocket(onMessage);
@@ -45,5 +44,5 @@ export default function usePricesBySocket() {
       ws.close();
     };
   }, [createWebSocket]);
-  return { priceList };
+  return { socketData };
 }
